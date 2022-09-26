@@ -25,8 +25,10 @@ public class GlobalExceptionHandler {
 
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private ProfileConfig profileConfig;
 
-    private String[] email = new String[]{"接收人邮箱"};
+    private String[] email = new String[]{"215063628@qq.com"};
 
     @ResponseBody
     @ExceptionHandler
@@ -46,22 +48,26 @@ public class GlobalExceptionHandler {
 
         }
         log.error("请求体:{}",requstBody);
-        StringWriter stringWriter = new StringWriter();
-        e.printStackTrace(new PrintWriter(stringWriter));
-        Email mail = new Email();
-        mail.setEmail(email);
-        mail.setSubject("异常告警邮件通知");
-        mail.setContent(stringWriter.toString());
-        // mailService.send(mail);//发送普通邮件
-        mail.setTemplate("notifyEmail.ftl");
-        HashMap<String, Object> mapParam = new HashMap<>(); //自定义模板参数，用于在ftl中接收展示
-        mapParam.put("requestUrl", request.getRequestURL());
-        mapParam.put("exceptionMessage", e.getMessage());
-        mapParam.put("exceptionClass", e.getClass());
-        mapParam.put("method", request.getMethod());
-        mapParam.put("requestBody",requstBody);
-        mail.setKvMap(mapParam);
-        emailService.sendFreemarker(mail);//发送模板邮件
+        //本地环境不发邮件
+        if (ProfileConfig.PRO_PROFILE.equals(profileConfig.getActiveProfile())){
+            StringWriter stringWriter = new StringWriter();
+            e.printStackTrace(new PrintWriter(stringWriter));
+            Email mail = new Email();
+            mail.setEmail(email);
+            mail.setSubject("异常告警邮件通知");
+            mail.setContent(stringWriter.toString());
+            // mailService.send(mail);//发送普通邮件
+            mail.setTemplate("notifyEmail.ftl");
+            HashMap<String, Object> mapParam = new HashMap<>(); //自定义模板参数，用于在ftl中接收展示
+            mapParam.put("requestUrl", request.getRequestURL());
+            mapParam.put("exceptionMessage", e.getMessage());
+            mapParam.put("exceptionClass", e.getClass());
+            mapParam.put("method", request.getMethod());
+            mapParam.put("requestBody",requstBody);
+            mail.setKvMap(mapParam);
+            emailService.sendFreemarker(mail);//发送模板邮件
+        }
+
         log.error(e.getMessage(), e);
         return R.failed(e.getMessage());
     }
