@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
     @Autowired
     private EmailService emailService;
 
-    private String[] email = new String[]{"215063628@qq.com"};
+    private String[] email = new String[]{"接收人邮箱"};
 
     @ResponseBody
     @ExceptionHandler
