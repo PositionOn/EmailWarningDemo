@@ -1,8 +1,8 @@
 spring:
   mail:
     host: smtp.exmail.qq.com
-    username: huangzhiwen@xiaoyujia.com
-    password: aA215063628
+    username: you username
+    password: you password
     properties:
       mail:
         smtp:
